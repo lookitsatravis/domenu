@@ -1,0 +1,20 @@
+{
+  "name": "domenu",
+  "version": "0.95.77",
+  "description": "Customized version of Nestable for wordpress-like back-end hierarchical menu creation.",
+  "main": "jquery.domenu-0.95.77.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mechanicious/domenu/.git"
+  },
+  "keywords": [
+    "menu",
+    "wordpress",
+    "nestable"
+  ],
+  "author": "Mateusz Zawartka",
+  "license": "BSD & MIT"
+}
