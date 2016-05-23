@@ -176,6 +176,7 @@
       onItemAdded:        [],
       onItemExpanded:     [],
       onItemCollapsed:    [],
+      onBeforeItemRemoved: [],
       onItemRemoved:      [],
       onItemStartEdit:    [],
       onItemEndEdit:      [],
@@ -607,6 +608,17 @@
        * @version-control +0.1.0 fix onItemRemoved event listener
        */
       blueprint.remove = function() {
+        var prevented = false;
+        jQuery.each(opt.event.onBeforeItemRemoved, function(i, cb) {
+            if(!cb(blueprint)) {
+                prevented = true;
+            }
+        });
+
+        if(prevented) {
+            return;
+        }
+
         var parent = blueprint.parents(_this.options.itemClass.dot()).first();
         jQuery(this).remove();
         _this.unsetEmptyParent(parent);
@@ -680,11 +692,6 @@
           // When there is no confirmation class just remove the item
         } else {
           blueprint.remove();
-
-          // Call item remove event listeners
-          opt.event.onItemRemoved.forEach(function(cb, i) {
-            cb(blueprint, e);
-          });
         }
       });
 
@@ -774,7 +781,7 @@
       var data,
           depth = 0,
           list  = this;
-      step      = function(level, depth) {
+      var step      = function(level, depth) {
         var array = [],
             items = level.children(list.options.itemNodeName);
         items.each(function() {
@@ -1508,6 +1515,13 @@
       _this._plugin.options.event.onItemAdded.push(callback.bind(_this));
       return _this;
     },
+
+    onBeforeItemRemoved: function(callback) {
+        var _this = this;
+        _this._plugin.options.event.onBeforeItemRemoved.push(callback.bind(_this));
+        return _this;
+    },
+
     /**
      * @desc Fires when an item has been removed
      * @callback-params jQueryCollection item, MouseEvent event
