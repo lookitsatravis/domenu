@@ -386,6 +386,9 @@
           firstInput.val(spn.text());
         else firstInput.val(firstInput.find('option:contains(' + spn.text() + ')').val());
 
+        // Hide the listings and promoted button
+        item.find('.item-promoted').hide();
+        item.find('.item-listings').hide();
 
         // Hide the remove button
         btnContainer.stop().hide(opt.slideAnimationDuration, function() {
@@ -475,8 +478,21 @@
         var itemDataValue     = $(input).parents(opt.itemClass.dot().join(',').join(opt.itemBlueprintClass.dot())).first().data(input.getAttribute('name')),
             inputDefaultValue = $(input).data('default-value') || '';
         $item                 = $(input).parents(opt.itemClass.dot()).first();
-        if(!(itemDataValue || input.value)) var tokenizedDefault = _this.resolveToken(inputDefaultValue, $(input));
-        $item.data(input.getAttribute('name'), $(input).val() || itemDataValue || tokenizedDefault);
+
+        if($(input).attr('type') == 'checkbox') {
+          // is this the first time we've acted on this item?
+          if(!$item.data('__initialized')) {
+            var ngItem = $item.data('$ngItem');
+            $item.data(input.getAttribute('name'), ngItem ? ngItem[input.getAttribute('name')] : false);
+            $item.data('__initialized', true);
+          } else {
+            var isChecked = $(input).prop('checked');
+            $item.data(input.getAttribute('name'), isChecked);
+          }
+        } else {
+          if(!(itemDataValue || input.value)) var tokenizedDefault = _this.resolveToken(inputDefaultValue, $(input));
+          $item.data(input.getAttribute('name'), $(input).val() || itemDataValue || tokenizedDefault);
+        }
       });
 
       // Call on save edit box event listeners
@@ -517,6 +533,9 @@
         // Save inputs
         _this.saveEditBoxInput(inputCollection);
 
+        // Update promoted
+        _this.determineAndSetPromoted(item);
+
         // Show the button container
         btnContainer.attr('style', '');
 
@@ -527,6 +546,10 @@
 
         // Show the span content
         spn.stop().slideDown(opt.slideAnimationDuration);
+
+        // Show the listings and promoted button
+        item.find('.item-promoted').show();
+        item.find('.item-listings').show();
       });
 
 
@@ -556,6 +579,17 @@
           choice                                = firstInputText || firstInputValue || itemDataValue || _this.resolveToken(firstEditBoxInputDataPlaceholderValue) || firstEditBoxInputPlaceholderValue;
 
       item.find(opt.contentClass.dot().join('span')).first().text(choice);
+    },
+    determineAndSetPromoted: function(item) {
+      var isChecked = item.data().promoted;
+      // checkbox
+      item.find('input[name=promoted]').first().prop('checked', isChecked);
+      // label
+      item.find('.item-promoted').first().text(isChecked ? 'Promoted' : '');
+    },
+    setListings: function(item) {
+      var listings = item.data().listings || 0;
+      item.find('.item-listings').first().text('Listings: ' + listings);
     },
     /**
      * @version-control +0.0.4 fix fill inputs with placeholders #3
@@ -665,6 +699,12 @@
       // Set title
       this.determineAndSetItemTitle(blueprint);
 
+      // Set promoted
+      this.determineAndSetPromoted(blueprint);
+
+      // Set listings
+      this.setListings(blueprint);
+
       // Parse tokens etc..
       this.setInputCollectionPlaceholders(inputCollection);
 
@@ -711,7 +751,7 @@
       });
 
       // Setup editing; on every mouse click clickStartEditEventHandler will be called
-      blueprint.find('span').first().get(0).addEventListener('click', _this.clickStartEditEventHandler.bind(this));
+      blueprint.find('.item-edit').first().get(0).addEventListener('click', _this.clickStartEditEventHandler.bind(this));
 
       if(_this.options.select2.support) {
         blueprint.find('select').css('width', _this.options.select2.selectWidth);
