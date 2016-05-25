@@ -591,6 +591,14 @@
       var listings = item.data().listings || 0;
       item.find('.item-listings').first().text('Listings: ' + listings);
     },
+    setRemoveVisibility: function(item) {
+      var children = item.find(this.options.itemClass.dot());
+      if(item.data('listings') > 0 || (children && children.length > 0)) {
+        item.find(this.options.removeBtnClass.dot()).first().hide();
+      } else {
+        item.find(this.options.removeBtnClass.dot()).first().show();
+      }
+    },
     /**
      * @version-control +0.0.4 fix fill inputs with placeholders #3
      * @version-control +0.1.0 fix populate inputs with values whenever possible #5
@@ -735,6 +743,9 @@
         }
       });
 
+      // Set remove button visibility
+      _this.setRemoveVisibility(blueprint);
+
       // Set the add button click event handler
       blueprint.find(opt.itemAddBtnClass.dot()).first().on('click', function(event) {
         _this.itemAddChildItem(blueprint);
@@ -873,6 +884,9 @@
           jQuery.each(i.children, function(i, e) {
             processItem(e, cref);
           })
+
+          // Set remove button visibility once all child items exists
+          _this.setRemoveVisibility(item);
         } else {
           var item = _this.createNewListItem(i);
 
@@ -1031,6 +1045,8 @@
       // hide it
       $item.children('[data-action="expand"]').hide();
 
+      this.setRemoveVisibility($item);
+
       // Call start edit event listeners
       opt.event.onItemSetParent.forEach(function(cb, i) {
         cb($item);
@@ -1051,6 +1067,8 @@
       $item.children('[data-action]').hide();
       $item.children(this.options.listNodeName).remove();
       $item.removeData('children');
+
+      this.setRemoveVisibility($item);
 
       // Call start edit event listeners
       opt.event.onItemUnsetParent.forEach(function(cb, i) {
@@ -1139,6 +1157,11 @@
 
       this.mouse.distXtotal = 0;
       this.mouse.distYtotal = 0;
+
+      this.setRemoveVisibility($(el));
+
+      // Also set visibility of the parent
+      this.setRemoveVisibility($(el).parents(this.options.itemClass.dot()).first());
 
       // Call end drag event listeners
       this.options.event.onItemDrop.forEach(function(cb, i) {
