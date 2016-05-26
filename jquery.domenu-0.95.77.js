@@ -386,8 +386,8 @@
           firstInput.val(spn.text());
         else firstInput.val(firstInput.find('option:contains(' + spn.text() + ')').val());
 
-        // Hide the listings and promoted button
-        item.find('.item-promoted').hide();
+        // Hide the listings and featured button
+        item.find('.item-featured').hide();
         item.find('.item-listings').hide();
 
         // Hide the remove button
@@ -533,8 +533,8 @@
         // Save inputs
         _this.saveEditBoxInput(inputCollection);
 
-        // Update promoted
-        _this.determineAndSetPromoted(item);
+        // Update featured
+        _this.determineAndSetFeatured(item);
 
         // Show the button container
         btnContainer.attr('style', '');
@@ -547,8 +547,8 @@
         // Show the span content
         spn.stop().slideDown(opt.slideAnimationDuration);
 
-        // Show the listings and promoted button
-        item.find('.item-promoted').show();
+        // Show the listings and featured button
+        item.find('.item-featured').show();
         item.find('.item-listings').show();
       });
 
@@ -580,12 +580,12 @@
 
       item.find(opt.contentClass.dot().join('span')).first().text(choice);
     },
-    determineAndSetPromoted: function(item) {
-      var isChecked = item.data().promoted;
+    determineAndSetFeatured: function(item) {
+      var isChecked = item.data().featured;
       // checkbox
-      item.find('input[name=promoted]').first().prop('checked', isChecked);
+      item.find('input[name=featured]').first().prop('checked', isChecked);
       // label
-      item.find('.item-promoted').first().text(isChecked ? 'Promoted' : '');
+      item.find('.item-featured').first().text(isChecked ? 'Featured' : '');
     },
     setListings: function(item) {
       var listings = item.data().listings || 0;
@@ -707,8 +707,8 @@
       // Set title
       this.determineAndSetItemTitle(blueprint);
 
-      // Set promoted
-      this.determineAndSetPromoted(blueprint);
+      // Set featured
+      this.determineAndSetFeatured(blueprint);
 
       // Set listings
       this.setListings(blueprint);
