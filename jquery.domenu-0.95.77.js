@@ -387,14 +387,21 @@
         else firstInput.val(firstInput.find('option:contains(' + spn.text() + ')').val());
 
         // Hide the listings and featured button
-        item.find('.item-featured').hide();
-        item.find('.item-listings').hide();
+        item.find('.item-featured').first().hide();
+        item.find('.item-listings').first().hide();
 
         // Hide the remove button
         btnContainer.stop().hide(opt.slideAnimationDuration, function() {
           // Show the edit panel
           edtBox.stop().show(opt.slideAnimationDuration, function() {
             edtBox.children().first('input').select().focus();
+            var parentElem = item.parents('.dd-item');
+            if(parentElem.length > 0) {
+              edtBox.find('.domenu-featured').hide();
+            } else {
+              edtBox.find('.domenu-featured').show();
+            }
+
             // Be ready to close the edit mode
             igniteKeypressEnterEndEditEventHandler(item);
           });
