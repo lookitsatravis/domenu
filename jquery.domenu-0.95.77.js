@@ -388,6 +388,7 @@
 
         // Hide the listings and featured button
         item.find('.item-featured').first().hide();
+        item.find('.item-hidden').first().hide();
         item.find('.item-listings').first().hide();
 
         // Hide the remove button
@@ -398,8 +399,10 @@
             var parentElem = item.parents('.dd-item');
             if(parentElem.length > 0) {
               edtBox.find('.domenu-featured').hide();
+              edtBox.find('.domenu-hidden').hide();
             } else {
               edtBox.find('.domenu-featured').show();
+              edtBox.find('.domenu-hidden').show();
             }
 
             // Be ready to close the edit mode
@@ -491,7 +494,6 @@
           if(!$item.data('__initialized')) {
             var ngItem = $item.data('$ngItem');
             $item.data(input.getAttribute('name'), ngItem ? ngItem[input.getAttribute('name')] : false);
-            $item.data('__initialized', true);
           } else {
             var isChecked = $(input).prop('checked');
             $item.data(input.getAttribute('name'), isChecked);
@@ -501,6 +503,8 @@
           $item.data(input.getAttribute('name'), $(input).val() || itemDataValue || tokenizedDefault);
         }
       });
+
+      $item.data('__initialized', true);
 
       // Call on save edit box event listeners
       opt.event.onSaveEditBoxInput.forEach(function(cb, i) {
@@ -543,6 +547,9 @@
         // Update featured
         _this.determineAndSetFeatured(item);
 
+        // Update hidden
+        _this.determineAndSetHidden(item);
+
         // Show the button container
         btnContainer.attr('style', '');
 
@@ -554,8 +561,9 @@
         // Show the span content
         spn.stop().slideDown(opt.slideAnimationDuration);
 
-        // Show the listings and featured button
+        // Show the listings, featured, and hidden items
         item.find('.item-featured').show();
+        item.find('.item-hidden').show();
         item.find('.item-listings').show();
       });
 
@@ -593,6 +601,13 @@
       item.find('input[name=featured]').first().prop('checked', isChecked);
       // label
       item.find('.item-featured').first().text(isChecked ? 'Featured' : '');
+    },
+    determineAndSetHidden: function(item) {
+      var isChecked = item.data().hidden;
+      // checkbox
+      item.find('input[name="hidden"]').first().prop('checked', isChecked);
+      // label
+      item.find('.item-hidden').first().text(isChecked ? 'Hidden' : '');
     },
     setListings: function(item) {
       var listings = item.data().listings || 0;
@@ -716,6 +731,9 @@
 
       // Set featured
       this.determineAndSetFeatured(blueprint);
+
+      // Set hidden
+      this.determineAndSetHidden(blueprint);
 
       // Set listings
       this.setListings(blueprint);
